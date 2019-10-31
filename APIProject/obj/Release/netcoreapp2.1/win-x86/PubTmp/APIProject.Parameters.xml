@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="IIS Web Application Name" description="" value="mokles-001-site10" tags="IisApp">
+    <parameterEntry kind="ProviderPath" scope="IisApp" match="^C:\\Users\\Lenovo\\source\\repos\\APIProject\\obj\\Release\\netcoreapp2\.1\\win-x86\\PubTmp\\Out\\$" />
+  </parameter>
+</parameters>

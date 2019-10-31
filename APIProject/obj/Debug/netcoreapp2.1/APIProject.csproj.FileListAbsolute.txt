@@ -1,0 +1,13 @@
+C:\Users\Lenovo\source\repos\APIProject\obj\Debug\netcoreapp2.1\APIProject.csproj.CoreCompileInputs.cache
+C:\Users\Lenovo\source\repos\APIProject\obj\Debug\netcoreapp2.1\APIProject.RazorAssemblyInfo.cache
+C:\Users\Lenovo\source\repos\APIProject\obj\Debug\netcoreapp2.1\APIProject.RazorAssemblyInfo.cs
+C:\Users\Lenovo\source\repos\APIProject\obj\Debug\netcoreapp2.1\APIProject.AssemblyInfoInputs.cache
+C:\Users\Lenovo\source\repos\APIProject\obj\Debug\netcoreapp2.1\APIProject.AssemblyInfo.cs
+C:\Users\Lenovo\source\repos\APIProject\bin\Debug\netcoreapp2.1\APIProject.deps.json
+C:\Users\Lenovo\source\repos\APIProject\bin\Debug\netcoreapp2.1\APIProject.runtimeconfig.json
+C:\Users\Lenovo\source\repos\APIProject\bin\Debug\netcoreapp2.1\APIProject.runtimeconfig.dev.json
+C:\Users\Lenovo\source\repos\APIProject\bin\Debug\netcoreapp2.1\APIProject.dll
+C:\Users\Lenovo\source\repos\APIProject\bin\Debug\netcoreapp2.1\APIProject.pdb
+C:\Users\Lenovo\source\repos\APIProject\obj\Debug\netcoreapp2.1\APIProject.RazorTargetAssemblyInfo.cache
+C:\Users\Lenovo\source\repos\APIProject\obj\Debug\netcoreapp2.1\APIProject.dll
+C:\Users\Lenovo\source\repos\APIProject\obj\Debug\netcoreapp2.1\APIProject.pdb
