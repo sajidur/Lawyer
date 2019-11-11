@@ -9,6 +9,6 @@ namespace APIProject.Models
     {
         public string Name { get; set; }
         public string Mobile { get; set; }
-        public string Address { get; set; }
+        public Address Address { get; set; }
     }
 }

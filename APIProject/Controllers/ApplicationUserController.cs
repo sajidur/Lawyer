@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using APIProject;
 using APIProject.Models;
+using APIProject.Models;
 using APIProject.Request;
 
 namespace APIProject.Controllers
@@ -92,6 +93,11 @@ namespace APIProject.Controllers
             {
                 return BadRequest(ModelState);
             }
+            var alreadyExists = _context.Users.Where(a => a.Mobile == userRequest.Mobile).FirstOrDefault();
+            if (alreadyExists!=null)
+            {
+                return CreatedAtAction("GetUsers", alreadyExists.Id);
+            }
             var users = new Users()
             {
                 Address = userRequest.Address,
@@ -104,8 +110,8 @@ namespace APIProject.Controllers
             };
             _context.Users.Add(users);
             await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetUsers", new { id = users.Id }, users);
+            var lastid = _context.Users.LastOrDefault();
+            return CreatedAtAction("GetUsers", lastid.Id);
         }
 
         // DELETE: api/ApplicationUser/5

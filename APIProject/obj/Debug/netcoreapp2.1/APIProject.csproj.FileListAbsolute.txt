@@ -11,3 +11,4 @@ C:\Users\Lenovo\source\repos\APIProject\bin\Debug\netcoreapp2.1\APIProject.pdb
 C:\Users\Lenovo\source\repos\APIProject\obj\Debug\netcoreapp2.1\APIProject.RazorTargetAssemblyInfo.cache
 C:\Users\Lenovo\source\repos\APIProject\obj\Debug\netcoreapp2.1\APIProject.dll
 C:\Users\Lenovo\source\repos\APIProject\obj\Debug\netcoreapp2.1\APIProject.pdb
+C:\Users\Lenovo\source\repos\APIProject\obj\Debug\netcoreapp2.1\APIProject.csprojAssemblyReference.cache

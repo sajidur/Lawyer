@@ -4,14 +4,16 @@ using APIProject;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace APIProject.Migrations
 {
     [DbContext(typeof(LawyerAPIDBContext))]
-    partial class LawyerAPIDBContextModelSnapshot : ModelSnapshot
+    [Migration("20191107031425_UpdateDb")]
+    partial class UpdateDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,29 +44,6 @@ namespace APIProject.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Address");
-                });
-
-            modelBuilder.Entity("APIProject.Models.BIO", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("CreatedDate");
-
-                    b.Property<bool>("IsActive");
-
-                    b.Property<int?>("LawyerProfileId");
-
-                    b.Property<DateTime>("UpdatedDate");
-
-                    b.Property<string>("biotext");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LawyerProfileId");
-
-                    b.ToTable("BIO");
                 });
 
             modelBuilder.Entity("APIProject.Models.ClientLawyerAssignment", b =>
@@ -250,6 +229,8 @@ namespace APIProject.Migrations
 
                     b.Property<int?>("AddressId");
 
+                    b.Property<string>("Bio");
+
                     b.Property<int>("BioCharLimit");
 
                     b.Property<DateTime>("CreatedDate");
@@ -327,13 +308,6 @@ namespace APIProject.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("APIProject.Models.BIO", b =>
-                {
-                    b.HasOne("APIProject.Models.LawyerProfile")
-                        .WithMany("Bio")
-                        .HasForeignKey("LawyerProfileId");
                 });
 
             modelBuilder.Entity("APIProject.Models.ClientLawyerAssignment", b =>

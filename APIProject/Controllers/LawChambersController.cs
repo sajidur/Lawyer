@@ -12,56 +12,56 @@ namespace APIProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LawyerProfilesController : ControllerBase
+    public class LawChambersController : ControllerBase
     {
         private readonly LawyerAPIDBContext _context;
 
-        public LawyerProfilesController(LawyerAPIDBContext context)
+        public LawChambersController(LawyerAPIDBContext context)
         {
             _context = context;
         }
 
-        // GET: api/LawyerProfiles
+        // GET: api/LawChambers
         [HttpGet]
-        public IEnumerable<LawyerProfile> GetLawyerProfile()
+        public IEnumerable<LawChamber> GetLawChambers()
         {
-            return _context.LawyerProfile;
+            return _context.LawChambers;
         }
 
-        // GET: api/LawyerProfiles/5
+        // GET: api/LawChambers/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetLawyerProfile([FromRoute] int id)
+        public async Task<IActionResult> GetLawChamber([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var lawyerProfile = await _context.LawyerProfile.FindAsync(id);
+            var lawChamber = await _context.LawChambers.FindAsync(id);
 
-            if (lawyerProfile == null)
+            if (lawChamber == null)
             {
                 return NotFound();
             }
 
-            return Ok(lawyerProfile);
+            return Ok(lawChamber);
         }
 
-        // PUT: api/LawyerProfiles/5
+        // PUT: api/LawChambers/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutLawyerProfile([FromRoute] int id, [FromBody] LawyerProfile lawyerProfile)
+        public async Task<IActionResult> PutLawChamber([FromRoute] int id, [FromBody] LawChamber lawChamber)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != lawyerProfile.Id)
+            if (id != lawChamber.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(lawyerProfile).State = EntityState.Modified;
+            _context.Entry(lawChamber).State = EntityState.Modified;
 
             try
             {
@@ -69,7 +69,7 @@ namespace APIProject.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!LawyerProfileExists(id))
+                if (!LawChamberExists(id))
                 {
                     return NotFound();
                 }
@@ -82,45 +82,45 @@ namespace APIProject.Controllers
             return NoContent();
         }
 
-        // POST: api/LawyerProfiles
+        // POST: api/LawChambers
         [HttpPost]
-        [Route("Add")]
-        public async Task<IActionResult> PostLawyerProfile( LawyerProfile userRequest)
+        public async Task<IActionResult> PostLawChamber([FromBody] LawChamber lawChamber)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            _context.LawyerProfile.Add(userRequest);
+
+            _context.LawChambers.Add(lawChamber);
             await _context.SaveChangesAsync();
-            var lastLawer = _context.LawyerProfile.LastOrDefault();
-            return CreatedAtAction("GetLawyerProfile", new { id = lastLawer.Id }, lastLawer);
+
+            return CreatedAtAction("GetLawChamber", new { id = lawChamber.Id }, lawChamber);
         }
 
-        // DELETE: api/LawyerProfiles/5
+        // DELETE: api/LawChambers/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteLawyerProfile([FromRoute] int id)
+        public async Task<IActionResult> DeleteLawChamber([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var lawyerProfile = await _context.LawyerProfile.FindAsync(id);
-            if (lawyerProfile == null)
+            var lawChamber = await _context.LawChambers.FindAsync(id);
+            if (lawChamber == null)
             {
                 return NotFound();
             }
 
-            _context.LawyerProfile.Remove(lawyerProfile);
+            _context.LawChambers.Remove(lawChamber);
             await _context.SaveChangesAsync();
 
-            return Ok(lawyerProfile);
+            return Ok(lawChamber);
         }
 
-        private bool LawyerProfileExists(int id)
+        private bool LawChamberExists(int id)
         {
-            return _context.LawyerProfile.Any(e => e.Id == id);
+            return _context.LawChambers.Any(e => e.Id == id);
         }
     }
 }
