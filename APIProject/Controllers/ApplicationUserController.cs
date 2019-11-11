@@ -9,6 +9,7 @@ using APIProject;
 using APIProject.Models;
 using APIProject.Models;
 using APIProject.Request;
+using APIProject.Response;
 
 namespace APIProject.Controllers
 {
@@ -89,29 +90,49 @@ namespace APIProject.Controllers
         [Route("register")]
         public async Task<IActionResult> Register(UserRequest userRequest)
         {
+            var res = new ResponseClass();
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var alreadyExists = _context.Users.Where(a => a.Mobile == userRequest.Mobile).FirstOrDefault();
-            if (alreadyExists!=null)
+            if (string.IsNullOrEmpty(userRequest.Mobile))
             {
-                return CreatedAtAction("GetUsers", alreadyExists.Id);
+                res.status = false;
+                res.data = 0;
             }
-            var users = new Users()
+            try
             {
-                Address = userRequest.Address,
-                Mobile = userRequest.Mobile,
-                UserType = userRequest.UserType,
-                Name = userRequest.Name,
-                IsActive = true,
-                CreatedDate = new DateTime(),
-                UpdatedDate = new DateTime()
-            };
-            _context.Users.Add(users);
-            await _context.SaveChangesAsync();
-            var lastid = _context.Users.LastOrDefault();
-            return CreatedAtAction("GetUsers", lastid.Id);
+                var alreadyExists = _context.Users.Where(a => a.Mobile == userRequest.Mobile).FirstOrDefault();
+                if (alreadyExists != null)
+                {
+                    res.status = true;
+                    res.data = alreadyExists.Id;
+                    return CreatedAtAction("GetUsers", res);
+                }
+                var users = new Users()
+                {
+                    Address = userRequest.Address,
+                    Mobile = userRequest.Mobile,
+                    UserType = userRequest.UserType,
+                    Name = userRequest.Name,
+                    IsActive = true,
+                    CreatedDate = new DateTime(),
+                    UpdatedDate = new DateTime()
+                };
+                _context.Users.Add(users);
+                await _context.SaveChangesAsync();
+                var lastid = _context.Users.LastOrDefault();
+                res.status = true;
+                res.data = lastid;
+                return CreatedAtAction("GetUsers", res);
+            }
+            catch (Exception ex)
+            {
+                res.status = false;
+                res.data = ex.Message;
+                return CreatedAtAction("GetUsers", res);
+            }
+
         }
 
         // DELETE: api/ApplicationUser/5
