@@ -9,6 +9,7 @@ using APIProject;
 using APIProject.Models;
 using APIProject.Models;
 using APIProject.Request;
+using APIProject.Response;
 
 namespace APIProject.Controllers
 {
@@ -89,23 +90,34 @@ namespace APIProject.Controllers
         [Route("Add")]
         public async Task<IActionResult> PostClientProfile(CustomerProfileRequest userRequest)
         {
+            var res = new ResponseClass();
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var clientProfile = new ClientProfile()
+            try
             {
-                Address = userRequest.Address,
-                Mobile = userRequest.Mobile,
-                Name = userRequest.Name,
-                IsActive = true,
-                CreatedDate = new DateTime(),
-                UpdatedDate = new DateTime()
-            };
-            _context.ClientProfile.Add(clientProfile);
-            await _context.SaveChangesAsync();
+                var clientProfile = new ClientProfile()
+                {
+                    Address = userRequest.Address,
+                    Mobile = userRequest.Mobile,
+                    Name = userRequest.Name,
+                    IsActive = true,
+                    CreatedDate = new DateTime(),
+                    UpdatedDate = new DateTime()
+                };
+                _context.ClientProfile.Add(clientProfile);
+                await _context.SaveChangesAsync();
+                res.status = true;
+                res.data = userRequest.Mobile;
+            }
+            catch (Exception ex)
+            {
+                res.status = false;
+                res.data = ex.Message;
+            }
 
-            return CreatedAtAction("GetClientProfile", new { id = clientProfile.Id }, clientProfile);
+            return CreatedAtAction("GetClientProfile", res);
         }
 
         // DELETE: api/ClientProfiles/5

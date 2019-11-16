@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using APIProject;
 using APIProject.Models;
+using APIProject.Response;
 
 namespace APIProject.Controllers
 {
@@ -87,14 +88,26 @@ namespace APIProject.Controllers
         [Route("Add")]
         public async Task<IActionResult> PostLawyerProfile( LawyerProfile userRequest)
         {
+            var res = new ResponseClass();
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            _context.LawyerProfile.Add(userRequest);
-            await _context.SaveChangesAsync();
-            var lastLawer = _context.LawyerProfile.LastOrDefault();
-            return CreatedAtAction("GetLawyerProfile", new { id = lastLawer.Id }, lastLawer);
+            try
+            {
+                _context.LawyerProfile.Add(userRequest);
+                await _context.SaveChangesAsync();
+                var lastLawer = _context.LawyerProfile.LastOrDefault();
+                res.status = true;
+                res.data = userRequest.Mobile;
+            }
+            catch (Exception ex)
+            {
+                res.status = false;
+                res.data = ex.Message;
+            }
+
+            return CreatedAtAction("GetLawyerProfile", res);
         }
 
         // DELETE: api/LawyerProfiles/5

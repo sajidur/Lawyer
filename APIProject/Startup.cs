@@ -53,6 +53,17 @@ namespace APIProject
             });
             //  app.UseHttpsRedirection();
             app.UseMvc();
+            app.UseMvc(routes =>
+            {
+                // You can add all the routes you need here
+
+                // And the default route :
+                routes.MapRoute(
+                     name: "default_route",
+                     template: "{controller}/{action}/{id?}",
+                     defaults: new { controller = "Home", action = "Index" }
+                );
+            });
         }
     }
 }
