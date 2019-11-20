@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using APIProject;
 using APIProject.Models;
 using APIProject.Response;
+using APIProject.Request;
 
 namespace APIProject.Controllers
 {
@@ -24,9 +25,20 @@ namespace APIProject.Controllers
 
         // GET: api/LawyerProfiles
         [HttpGet]
-        public IEnumerable<LawyerProfile> GetLawyerProfile()
+        public async Task<IActionResult>  GetLawyerProfile()
         {
-            return _context.LawyerProfile;
+            var res = new ResponseClass();
+            try
+            {
+                res.data = _context.LawyerProfile.Include(a => a.Users).Include(a => a.Address).Include(a=>a.ProfilePic).Include(a=>a.Bio).Include(a=>a.Education).Include(a=>a.Experience).Include(a=>a.PackageSettings);
+                res.status = true;
+
+            }
+            catch (Exception ex)
+            {
+                res.data = ex.Message;
+            }
+            return res.ToJson();
         }
 
         // GET: api/LawyerProfiles/5
@@ -52,6 +64,8 @@ namespace APIProject.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutLawyerProfile([FromRoute] int id, [FromBody] LawyerProfile lawyerProfile)
         {
+            var res = new ResponseClass();
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -59,7 +73,8 @@ namespace APIProject.Controllers
 
             if (id != lawyerProfile.Id)
             {
-                return BadRequest();
+                res.data = "Id and Profile id not matched";
+                return res.ToJson();
             }
 
             _context.Entry(lawyerProfile).State = EntityState.Modified;
@@ -67,6 +82,8 @@ namespace APIProject.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                res.status = true;
+                res.data = "Sucessfully Updated";
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -80,13 +97,13 @@ namespace APIProject.Controllers
                 }
             }
 
-            return NoContent();
+            return res.ToJson();
         }
 
         // POST: api/LawyerProfiles
         [HttpPost]
         [Route("Add")]
-        public async Task<IActionResult> PostLawyerProfile( LawyerProfile userRequest)
+        public async Task<IActionResult> PostLawyerProfile(LawyerProfileRequest userRequest)
         {
             var res = new ResponseClass();
             if (!ModelState.IsValid)
@@ -95,7 +112,37 @@ namespace APIProject.Controllers
             }
             try
             {
-                _context.LawyerProfile.Add(userRequest);
+                var users = _context.Users.Where(a => a.Id == userRequest.UserId).FirstOrDefault();
+                if (users == null)
+                {
+                    res.data = "User not found with the Id";
+                    return res.ToJson();
+                }
+                var alreadyExists = _context.LawyerProfile.Where(a => a.Users.Id == userRequest.UserId).FirstOrDefault();
+                if (alreadyExists != null)
+                {
+                    res.data = "User not found with the Id";
+                    return res.ToJson();
+                }
+                var lawprofile = new LawyerProfile()
+                {
+
+                    Address = userRequest.Address,
+                    Mobile = userRequest.Mobile,
+                    Name = userRequest.Name,
+                    IsActive = true,
+                    CreatedDate = new DateTime(),
+                    UpdatedDate = new DateTime(),
+                    Users = users,
+                    Bio=userRequest.Bio,
+                    BioCharLimit=userRequest.BioCharLimit,
+                    WorkingArea=userRequest.WorkingArea,
+                    Education=userRequest.Education,
+                    Experience=userRequest.Experience,
+                    PackageSettings=userRequest.PackageSettings,
+                    ProfilePic=userRequest.ProfilePic
+                };
+                _context.LawyerProfile.Add(lawprofile);
                 await _context.SaveChangesAsync();
                 var lastLawer = _context.LawyerProfile.LastOrDefault();
                 res.status = true;

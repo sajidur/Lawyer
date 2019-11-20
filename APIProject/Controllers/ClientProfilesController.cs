@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using APIProject;
-using APIProject.Models;
 using APIProject.Models;
 using APIProject.Request;
 using APIProject.Response;
@@ -26,9 +23,20 @@ namespace APIProject.Controllers
 
         // GET: api/ClientProfiles
         [HttpGet]
-        public IEnumerable<ClientProfile> GetClientProfile()
+        public async Task<IActionResult> GetClientProfile()
         {
-            return _context.ClientProfile;
+            var res = new ResponseClass();
+            try
+            {
+                res.data = _context.ClientProfile.Include(a => a.Users).Include(a => a.Address);
+                res.status = true;
+
+            }
+            catch (Exception ex)
+            {
+                res.data = ex.Message;
+            }
+            return res.ToJson();
         }
 
         // GET: api/ClientProfiles/5
@@ -97,14 +105,28 @@ namespace APIProject.Controllers
             }
             try
             {
+                var users = _context.Users.Where(a => a.Id == userRequest.UserId).FirstOrDefault();
+                if (users==null)
+                {
+                    res.data = "User not found with the Id";
+                    return res.ToJson();
+                }
+                var alreadyExists = _context.ClientProfile.Where(a => a.Users.Id == userRequest.UserId).FirstOrDefault();
+                if (alreadyExists!=null)
+                {
+                    res.data = "User not found with the Id";
+                    return res.ToJson();
+                }
                 var clientProfile = new ClientProfile()
                 {
+                    
                     Address = userRequest.Address,
                     Mobile = userRequest.Mobile,
                     Name = userRequest.Name,
                     IsActive = true,
                     CreatedDate = new DateTime(),
-                    UpdatedDate = new DateTime()
+                    UpdatedDate = new DateTime(),
+                    Users=users
                 };
                 _context.ClientProfile.Add(clientProfile);
                 await _context.SaveChangesAsync();

@@ -8,6 +8,7 @@ namespace APIProject.Request
 {
     public class CustomerProfileRequest
     {
+        public int UserId { get; set; }
         public string Name { get; set; }
         public string Mobile { get; set; }
         public Address Address { get; set; }

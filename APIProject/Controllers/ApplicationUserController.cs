@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using APIProject;
-using APIProject.Models;
 using APIProject.Models;
 using APIProject.Request;
 using APIProject.Response;
@@ -26,15 +23,26 @@ namespace APIProject.Controllers
 
         // GET: api/ApplicationUser
         [HttpGet]
-        public IEnumerable<Users> GetUsers()
+        public async Task<ActionResult> GetUsers()
         {
-            return _context.Users;
+            var res = new ResponseClass();
+            try
+            {
+                res.status = true;
+                res.data = _context.Users;
+            }
+            catch (Exception ex)
+            {
+                res.data = ex.Message;
+            }
+            return res.ToJson();
         }
 
         // GET: api/ApplicationUser/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUsers([FromRoute] int id)
         {
+            var res = new ResponseClass();
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -44,10 +52,15 @@ namespace APIProject.Controllers
 
             if (users == null)
             {
-                return NotFound();
+               return res.ToJson();
             }
-
-            return Ok(users);
+            else
+            {
+                res.status = true;
+                res.data = users;
+            }
+            return res.ToJson();
+           
         }
 
         // PUT: api/ApplicationUser/5

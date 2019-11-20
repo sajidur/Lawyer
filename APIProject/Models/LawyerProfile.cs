@@ -18,5 +18,7 @@ namespace APIProject.Models
         public List<Experience> Experience { get; set; }
         public FileAttachment ProfilePic { get; set; }
         public PackageSettings PackageSettings { get; set; }
+        public Users Users { get; set; }
+
     }
 }

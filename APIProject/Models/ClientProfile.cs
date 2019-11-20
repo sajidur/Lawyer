@@ -10,5 +10,7 @@ namespace APIProject.Models
         public string Name { get; set; }
         public string Mobile { get; set; }
         public Address Address { get; set; }
+        public Users Users { get; set; }
+
     }
 }
