@@ -9,6 +9,8 @@ using APIProject;
 using APIProject.Models;
 using APIProject.Response;
 using APIProject.Request;
+using Microsoft.Extensions.Logging;
+using APIProject.BL;
 
 namespace APIProject.Controllers
 {
@@ -17,10 +19,11 @@ namespace APIProject.Controllers
     public class LawyerProfilesController : ControllerBase
     {
         private readonly LawyerAPIDBContext _context;
-
-        public LawyerProfilesController(LawyerAPIDBContext context)
+        private readonly ILogger _logger;
+        public LawyerProfilesController(LawyerAPIDBContext context, ILogger<LawyerProfilesController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: api/LawyerProfiles
@@ -64,6 +67,7 @@ namespace APIProject.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutLawyerProfile([FromRoute] int id, [FromBody] LawyerProfile lawyerProfile)
         {
+            _logger.LogInformation("PutLawyerProfile| {Message}", lawyerProfile.ToJson());
             var res = new ResponseClass();
 
             if (!ModelState.IsValid)
@@ -71,13 +75,29 @@ namespace APIProject.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (id != lawyerProfile.Id)
+            //if (id != lawyerProfile.Id)
+            //{
+            //    res.data = "Id and Profile id not matched";
+            //    return res.ToJson();
+            //}
+            var lawyer = _context.LawyerProfile.Where(a => a.Id == id).FirstOrDefault();
+            if (lawyer!=null)
             {
-                res.data = "Id and Profile id not matched";
-                return res.ToJson();
+                lawyer.Address = lawyerProfile.Address;
+                lawyer.Education = lawyerProfile.Education;
+                lawyer.Experience = lawyerProfile.Experience;
+                lawyer.Bio = lawyerProfile.Bio;
+                lawyer.Name = lawyerProfile.Name;
+                lawyer.PackageSettings = lawyerProfile.PackageSettings;
             }
+            else
+            {
+                    res.data = "Profile not found";
+                    return res.ToJson();
+            }
+            _context.LawyerProfile.Update(lawyer);
 
-            _context.Entry(lawyerProfile).State = EntityState.Modified;
+            //_context.Entry(lawyerProfile).State = EntityState.Modified;
 
             try
             {
@@ -110,51 +130,9 @@ namespace APIProject.Controllers
             {
                 return BadRequest(ModelState);
             }
-            try
-            {
-                var users = _context.Users.Where(a => a.Id == userRequest.UserId).FirstOrDefault();
-                if (users == null)
-                {
-                    res.data = "User not found with the Id";
-                    return res.ToJson();
-                }
-                var alreadyExists = _context.LawyerProfile.Where(a => a.Users.Id == userRequest.UserId).FirstOrDefault();
-                if (alreadyExists != null)
-                {
-                    res.data = "User not found with the Id";
-                    return res.ToJson();
-                }
-                var lawprofile = new LawyerProfile()
-                {
+            LawyerProfileService service = new LawyerProfileService(_context);
+            return service.Add(userRequest).ToJson();
 
-                    Address = userRequest.Address,
-                    Mobile = userRequest.Mobile,
-                    Name = userRequest.Name,
-                    IsActive = true,
-                    CreatedDate = new DateTime(),
-                    UpdatedDate = new DateTime(),
-                    Users = users,
-                    Bio=userRequest.Bio,
-                    BioCharLimit=userRequest.BioCharLimit,
-                    WorkingArea=userRequest.WorkingArea,
-                    Education=userRequest.Education,
-                    Experience=userRequest.Experience,
-                    PackageSettings=userRequest.PackageSettings,
-                    ProfilePic=userRequest.ProfilePic
-                };
-                _context.LawyerProfile.Add(lawprofile);
-                await _context.SaveChangesAsync();
-                var lastLawer = _context.LawyerProfile.LastOrDefault();
-                res.status = true;
-                res.data = userRequest.Mobile;
-            }
-            catch (Exception ex)
-            {
-                res.status = false;
-                res.data = ex.Message;
-            }
-
-            return CreatedAtAction("GetLawyerProfile", res);
         }
 
         // DELETE: api/LawyerProfiles/5

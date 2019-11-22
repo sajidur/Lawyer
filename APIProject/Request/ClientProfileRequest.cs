@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace APIProject.Request
 {
-    public class CustomerProfileRequest
+    public class ClientProfileRequest
     {
         public int UserId { get; set; }
         public string Name { get; set; }

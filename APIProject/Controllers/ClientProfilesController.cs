@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using APIProject.Models;
 using APIProject.Request;
 using APIProject.Response;
+using APIProject.BL;
 
 namespace APIProject.Controllers
 {
@@ -96,50 +97,15 @@ namespace APIProject.Controllers
         // POST: api/ClientProfiles
         [HttpPost]
         [Route("Add")]
-        public async Task<IActionResult> PostClientProfile(CustomerProfileRequest userRequest)
+        public async Task<IActionResult> PostClientProfile(ClientProfileRequest userRequest)
         {
-            var res = new ResponseClass();
+            ClientProfileService service = new ClientProfileService(_context);
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            try
-            {
-                var users = _context.Users.Where(a => a.Id == userRequest.UserId).FirstOrDefault();
-                if (users==null)
-                {
-                    res.data = "User not found with the Id";
-                    return res.ToJson();
-                }
-                var alreadyExists = _context.ClientProfile.Where(a => a.Users.Id == userRequest.UserId).FirstOrDefault();
-                if (alreadyExists!=null)
-                {
-                    res.data = "User not found with the Id";
-                    return res.ToJson();
-                }
-                var clientProfile = new ClientProfile()
-                {
-                    
-                    Address = userRequest.Address,
-                    Mobile = userRequest.Mobile,
-                    Name = userRequest.Name,
-                    IsActive = true,
-                    CreatedDate = new DateTime(),
-                    UpdatedDate = new DateTime(),
-                    Users=users
-                };
-                _context.ClientProfile.Add(clientProfile);
-                await _context.SaveChangesAsync();
-                res.status = true;
-                res.data = userRequest.Mobile;
-            }
-            catch (Exception ex)
-            {
-                res.status = false;
-                res.data = ex.Message;
-            }
 
-            return CreatedAtAction("GetClientProfile", res);
+            return service.Add(userRequest).ToJson();
         }
 
         // DELETE: api/ClientProfiles/5

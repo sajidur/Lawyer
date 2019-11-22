@@ -11,4 +11,10 @@ namespace APIProject
         Intermidiate=2,
         Platinum =3
     }
+
+    public enum UserType
+    {
+        Client=1,
+        Lawyer=2
+    }
 }

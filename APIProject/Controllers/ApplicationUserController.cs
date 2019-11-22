@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using APIProject.Models;
 using APIProject.Request;
 using APIProject.Response;
+using APIProject.BL;
 
 namespace APIProject.Controllers
 {
@@ -120,24 +121,38 @@ namespace APIProject.Controllers
                 {
                     res.status = true;
                     res.data = alreadyExists.Id;
-                    return CreatedAtAction("GetUsers", res);
                 }
-                var users = new Users()
+                else
                 {
-                    Address = userRequest.Address,
-                    Mobile = userRequest.Mobile,
-                    UserType = userRequest.UserType,
-                    Name = userRequest.Name,
-                    IsActive = true,
-                    CreatedDate = new DateTime(),
-                    UpdatedDate = new DateTime()
-                };
-                _context.Users.Add(users);
-                await _context.SaveChangesAsync();
-                var lastid = _context.Users.LastOrDefault();
+                    var users = new Users()
+                    {
+                        Address = userRequest.Address,
+                        Mobile = userRequest.Mobile,
+                        UserType = userRequest.UserType,
+                        Name = userRequest.Name,
+                        IsActive = true,
+                        CreatedDate = new DateTime(),
+                        UpdatedDate = new DateTime()
+                    };
+                    _context.Users.Add(users);
+                    _ = _context.SaveChangesAsync();
+                }
+                var lastid = _context.Users.Where(a => a.Mobile == userRequest.Mobile).FirstOrDefault();
                 res.status = true;
-                res.data = lastid;
-                return CreatedAtAction("GetUsers", res);
+                res.data = lastid.Id;
+                if (userRequest.UserType==2)
+                {
+                    ClientProfileService service = new ClientProfileService(_context);
+                    var clientRequest = new ClientProfileRequest() { Mobile = userRequest.Mobile, UserId = lastid.Id };
+                    service.Add(clientRequest);
+                }
+                else
+                {
+                    LawyerProfileService service = new LawyerProfileService(_context);
+                    var clientRequest = new LawyerProfileRequest() { Mobile = userRequest.Mobile, UserId = lastid.Id };
+                    service.Add(clientRequest);
+                }
+                return res.ToJson();
             }
             catch (Exception ex)
             {
