@@ -53,7 +53,7 @@ namespace APIProject.Controllers
                 return BadRequest(ModelState);
             }
 
-            var lawyerProfile = await _context.LawyerProfile.FindAsync(id);
+            var lawyerProfile =  _context.LawyerProfile.Include(a => a.Users).Include(a => a.Address).Include(a => a.ProfilePic).Include(a => a.Bio).Include(a => a.Education).Include(a => a.Experience).Include(a => a.PackageSettings).Where(a=>a.Users.Id==id).FirstOrDefault();
 
             if (lawyerProfile == null)
             {
@@ -74,47 +74,39 @@ namespace APIProject.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            //if (id != lawyerProfile.Id)
-            //{
-            //    res.data = "Id and Profile id not matched";
-            //    return res.ToJson();
-            //}
-            var lawyer = _context.LawyerProfile.Where(a => a.Id == id).FirstOrDefault();
-            if (lawyer!=null)
+            var profile = _context.LawyerProfile.Where(a => a.Users.Id == id).FirstOrDefault();
+            if (profile != null)
             {
-                lawyer.Address = lawyerProfile.Address;
-                lawyer.Education = lawyerProfile.Education;
-                lawyer.Experience = lawyerProfile.Experience;
-                lawyer.Bio = lawyerProfile.Bio;
-                lawyer.Name = lawyerProfile.Name;
-                lawyer.PackageSettings = lawyerProfile.PackageSettings;
+                profile.Name = lawyerProfile.Name;
+                profile.UpdatedDate = DateTime.Now;
+                profile.Address = lawyerProfile.Address;
+                profile.Education = lawyerProfile.Education;
+                profile.Experience = lawyerProfile.Experience;
+                profile.PackageSettings = lawyerProfile.PackageSettings;
+                profile.WorkingArea = lawyerProfile.WorkingArea;
+                profile.Bio = lawyerProfile.Bio;
+                profile.BioCharLimit = lawyerProfile.BioCharLimit;
+                _context.Entry(profile).State = EntityState.Modified;
             }
             else
             {
                     res.data = "Profile not found";
                     return res.ToJson();
             }
-            _context.LawyerProfile.Update(lawyer);
+            _context.LawyerProfile.Update(profile);
 
             //_context.Entry(lawyerProfile).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
                 res.status = true;
                 res.data = "Sucessfully Updated";
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
-                if (!LawyerProfileExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                res.data = "Profile not updated|"+ex.Message;
+                return res.ToJson();
             }
 
             return res.ToJson();
@@ -151,7 +143,7 @@ namespace APIProject.Controllers
             }
 
             _context.LawyerProfile.Remove(lawyerProfile);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
 
             return Ok(lawyerProfile);
         }

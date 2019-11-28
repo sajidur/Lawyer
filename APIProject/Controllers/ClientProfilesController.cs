@@ -49,7 +49,7 @@ namespace APIProject.Controllers
                 return BadRequest(ModelState);
             }
 
-            var clientProfile = await _context.ClientProfile.FindAsync(id);
+            var clientProfile = _context.ClientProfile.Include(a=>a.Users).Include(a=>a.Address).Where(a=>a.Users.Id==id).FirstOrDefault();
 
             if (clientProfile == null)
             {
@@ -63,35 +63,32 @@ namespace APIProject.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutClientProfile([FromRoute] int id, [FromBody] ClientProfile clientProfile)
         {
+            var res = new ResponseClass();
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            if (id != clientProfile.Id)
+            var profile = _context.ClientProfile.Where(a => a.Users.Id == id).FirstOrDefault();
+            if (profile!=null)
             {
-                return BadRequest();
+                profile.Name = clientProfile.Name;
+                profile.UpdatedDate = DateTime.Now;
+                profile.Address = clientProfile.Address;
+                _context.Entry(profile).State = EntityState.Modified;
             }
-
-            _context.Entry(clientProfile).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
+                res.status = true;
+                res.data = "Updated";
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
-                if (!ClientProfileExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                res.data = "Not found|" + ex.Message;
             }
 
-            return NoContent();
+            return res.ToJson();
         }
 
         // POST: api/ClientProfiles
@@ -124,7 +121,7 @@ namespace APIProject.Controllers
             }
 
             _context.ClientProfile.Remove(clientProfile);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
 
             return Ok(clientProfile);
         }

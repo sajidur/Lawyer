@@ -135,7 +135,7 @@ namespace APIProject.Controllers
                         UpdatedDate = new DateTime()
                     };
                     _context.Users.Add(users);
-                    _ = _context.SaveChangesAsync();
+                    var _res = _context.SaveChanges();
                 }
                 var lastid = _context.Users.Where(a => a.Mobile == userRequest.Mobile).FirstOrDefault();
                 res.status = true;

@@ -92,7 +92,7 @@ namespace APIProject.Controllers
             }
 
             _context.LawChambers.Add(lawChamber);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
 
             return CreatedAtAction("GetLawChamber", new { id = lawChamber.Id }, lawChamber);
         }
@@ -113,7 +113,7 @@ namespace APIProject.Controllers
             }
 
             _context.LawChambers.Remove(lawChamber);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
 
             return Ok(lawChamber);
         }

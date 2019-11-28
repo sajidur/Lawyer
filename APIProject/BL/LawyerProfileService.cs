@@ -51,7 +51,7 @@ namespace APIProject.BL
                     ProfilePic = userRequest.ProfilePic
                 };
                 _context.LawyerProfile.Add(lawprofile);
-                _context.SaveChangesAsync();
+                _context.SaveChanges();
                 var lastLawer = _context.LawyerProfile.Where(a=>a.Mobile==userRequest.Mobile).FirstOrDefault();
                 res.status = true;
                 res.data = lastLawer.Id;

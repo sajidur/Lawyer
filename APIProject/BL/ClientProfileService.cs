@@ -44,7 +44,7 @@ namespace APIProject.BL
                     Users = users
                 };
                 _context.ClientProfile.Add(clientProfile);
-                _context.SaveChangesAsync();
+                _context.SaveChanges();
                 res.status = true;
                 res.data = request.Mobile;
                 return res;
